@@ -4,6 +4,7 @@
 #include "FPSAIGuard.h"
 #include "DrawDebugHelpers.h"
 #include "FPSGameMode.h"
+#include "UnrealNetwork.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Perception/PawnSensingComponent.h"
 
@@ -110,6 +111,14 @@ void AFPSAIGuard::ResetOrientation()
 	}
 }
 
+void AFPSAIGuard::OnRep_GuardState()
+{
+	OnStageChanged(GuardState);
+
+	
+	
+}
+
 void AFPSAIGuard::SetGuardState(EAIState NewState)
 {
 	if (GuardState == NewState)
@@ -118,6 +127,7 @@ void AFPSAIGuard::SetGuardState(EAIState NewState)
 	}
 
 	GuardState = NewState;
+	OnRep_GuardState();
 
 	OnStageChanged(GuardState);
 }
@@ -142,6 +152,8 @@ void AFPSAIGuard::Tick(float DeltaTime)
 
 }
 
+
+// CHALLENGE CODE
 void AFPSAIGuard::MoveToNextPatrolPoint()
 {
 	// Assign next patrol point.
@@ -155,9 +167,15 @@ void AFPSAIGuard::MoveToNextPatrolPoint()
 	}
 
 	UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), CurrentPatrolPoint);
-	
 }
 
+
+void AFPSAIGuard::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{  
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(AFPSAIGuard, GuardState);
+}
 
 
 
